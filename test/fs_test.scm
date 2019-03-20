@@ -9,11 +9,10 @@
  test "ensure path joining works"
  (is-eq "a/b/c/d" (join-paths "a////" "b" "//c////" "d")))
 
-(define fs (make <doc-fs>))
 (define tmp-base
   (join-paths "/tmp"
               (string-append "test_" (number->string (random 1000000000)))))
-(slot-set! fs 'base-path tmp-base)
+(define fs (make <doc-fs> #:base-path tmp-base))
 
 (register-test
  test "abs path creation works"

@@ -37,9 +37,10 @@
             fs-load-props))
 
 (define-class <doc-fs> ()
-  (base-path)
-  (in-port #:init-value open-input-file)
-  (out-port #:init-value open-output-file))
+  (base-path #:init-keyword #:base-path)
+  (in-port #:init-value open-input-file #:init-keyword #:in-port)
+  (out-port #:init-value open-output-file #:init-keyword #:out-port)
+  (meta-filename #:init-value "meta" #:init-keyword #:meta-filename))
 
 (define-method (fs-read-abs-path (fs <doc-fs>)
                                  (abs-path <string>))
@@ -69,18 +70,20 @@
       (mkdir abs-path))
     abs-path))
 
-(define meta-filename "meta.gpg")
-
 (define-method (fs-load-props (fs <doc-fs>)
                               (path <string>))
-  (fs-read-abs-path fs (join-paths (fs-make-abs-path fs path) meta-filename)))
+  (let ((abs-path (join-paths
+                   (fs-make-abs-path fs path)
+                   (slot-ref fs 'meta-filename))))
+    (fs-read-abs-path fs abs-path)))
 
 (define-method (fs-save-props (fs <doc-fs>)
                               (path <string>)
                               (props <list>))
-  (fs-write-abs-path fs
-                     (join-paths (fs-make-abs-path fs path) meta-filename)
-                     props))
+  (let ((abs-path (join-paths
+                   (fs-make-abs-path fs path)
+                   (slot-ref fs 'meta-filename))))
+    (fs-write-abs-path fs abs-path props)))
 
 (define-method (fs-get-prop (fs <doc-fs>)
                             (path <string>)
