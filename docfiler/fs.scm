@@ -40,6 +40,7 @@
   (base-path #:init-keyword #:base-path)
   (in-port #:init-value open-input-file #:init-keyword #:in-port)
   (out-port #:init-value open-output-file #:init-keyword #:out-port)
+  (port-closer #:init-value close-port #:init-keyword #:port-closer)
   (meta-filename #:init-value "meta" #:init-keyword #:meta-filename))
 
 (define-method (fs-read-abs-path (fs <doc-fs>)
@@ -47,7 +48,7 @@
   (if (file-exists? abs-path)
       (let* ((in-port ((slot-ref fs 'in-port) abs-path))
              (obj (read in-port)))
-        (close-port in-port)
+        ((slot-ref fs 'port-closer) in-port)
         obj)
       '()))
 
@@ -56,7 +57,7 @@
                                   (obj <list>))
   (let ((out-port ((slot-ref fs 'out-port) abs-path)))
     (write obj out-port)
-    (close-port out-port)))
+    ((slot-ref fs 'port-closer) out-port)))
 
 (define (join-paths . paths)
   (regexp-substitute/global #f "/+" (string-join paths "/") 'pre "/" 'post))
