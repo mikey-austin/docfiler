@@ -36,15 +36,15 @@
             fs-save-props
             fs-load-props))
 
-(define-class <doc-fs> () base-path)
-
-;; Exported functions
+(define-class <doc-fs> ()
+  (base-path)
+  (in-port #:init-value (lambda (abs-path) (open-input-file abs-path)))
+  (out-port #:init-value (lambda (abs-path) (open-output-file abs-path))))
 
 (define-method (fs-read-abs-path (fs <doc-fs>)
                                  (abs-path <string>))
-  ;; TODO: Possibly decrypt before reading here.
   (if (file-exists? abs-path)
-      (let* ((in-port (open-input-file abs-path))
+      (let* ((in-port ((slot-ref fs 'in-port) abs-path))
              (obj (read in-port)))
         (close-port in-port)
         obj)
@@ -53,8 +53,7 @@
 (define-method (fs-write-abs-path (fs <doc-fs>)
                                   (abs-path <string>)
                                   (obj <list>))
-  ;; TODO: Possibly encrypt before writing here.
-  (let ((out-port (open-output-file abs-path)))
+  (let ((out-port ((slot-ref fs 'out-port) abs-path)))
     (write obj out-port)
     (close-port out-port)))
 
@@ -70,7 +69,7 @@
       (mkdir abs-path))
     abs-path))
 
-(define meta-filename "meta")
+(define meta-filename "meta.gpg")
 
 (define-method (fs-load-props (fs <doc-fs>)
                               (path <string>))
