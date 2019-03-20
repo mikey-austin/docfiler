@@ -38,8 +38,8 @@
 
 (define-class <doc-fs> ()
   (base-path)
-  (in-port #:init-value (lambda (abs-path) (open-input-file abs-path)))
-  (out-port #:init-value (lambda (abs-path) (open-output-file abs-path))))
+  (in-port #:init-value open-input-file)
+  (out-port #:init-value open-output-file))
 
 (define-method (fs-read-abs-path (fs <doc-fs>)
                                  (abs-path <string>))
