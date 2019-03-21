@@ -10,12 +10,12 @@
  (is-eq
   '("/usr/bin/gpg2" "-ea" "-r" "jack" "-r" "stevenson"
     "--batch" "--yes" "--output" "/tmp/myfile")
-  (gpg-encrypt-cmd '("jack" "stevenson") "/tmp/myfile")))
+  (gpg-encrypt-cmd '("jack" "stevenson") "/tmp/myfile" #:gpg-prog "/usr/bin/gpg2")))
 
 (register-test
  test "the decrypt command is ok"
  (is-eq
   '("/usr/bin/gpg2" "--batch" "--yes" "-d" "/tmp/myfile")
-  (gpg-decrypt-cmd "/tmp/myfile")))
+  (gpg-decrypt-cmd "/tmp/myfile" #:gpg-prog "/usr/bin/gpg2")))
 
 (run-tests test)
