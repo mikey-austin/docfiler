@@ -20,24 +20,18 @@
   (fold-right
    (lambda (a b) (cons "-r" (cons a b))) '() recipients))
 
-(define* (gpg-encrypt-cmd recipients abs-path #:key
-                          (gpg-prog default-gpg-prog)
-                          gpg-home)
-  (append (list gpg-prog "-ea")
+(define* (gpg-encrypt-cmd recipients abs-path #:key gpg-prog gpg-home)
+  (append (list (if gpg-prog gpg-prog default-gpg-prog) "-ea")
           (gpg-expand-recipients recipients)
           (if gpg-home ("--homedir" gpg-home) '())
           (list "--batch" "--yes" "--output" abs-path)))
 
-(define* (gpg-decrypt-cmd abs-path #:key
-                          (gpg-prog default-gpg-prog)
-                          gpg-home)
-  (append (list gpg-prog "--batch" "--yes" "-d")
+(define* (gpg-decrypt-cmd abs-path #:key gpg-prog gpg-home)
+  (append (list (if gpg-prog gpg-prog default-gpg-prog) "--batch" "--yes" "-d")
           (if gpg-home ("--homedir" gpg-home) '())
           (list abs-path)))
 
-(define* (gpg-encrypt recipients abs-path #:key
-                      (gpg-prog default-gpg-prog)
-                      gpg-home)
+(define* (gpg-encrypt recipients abs-path #:key gpg-prog gpg-home)
   "\
 Return a writable port that encrypts data written to it to
 abs-path for the specified list of recipients. Note this stream
@@ -48,9 +42,7 @@ of zombies everywhere."
                                            #:gpg-prog gpg-prog
                                            #:gpg-home gpg-home))))
 
-(define* (gpg-decrypt abs-path #:key
-                      (gpg-prog default-gpg-prog)
-                      gpg-home)
+(define* (gpg-decrypt abs-path #:key gpg-prog gpg-home)
   "\
 Return a readable port that supplies decrypted data from
 abs-path to the caller. Note this stream
