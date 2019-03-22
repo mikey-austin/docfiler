@@ -36,6 +36,16 @@ gpg program path and gpg home directory arguments are optional.
                             (gpg-encrypt recipients abs-path
                                          #:gpg-prog gpg-prog
                                          #:gpg-home gpg-home)))))
-    (make <doc-storage> #:fs fs)))
+    (make <doc-store-fs-adapter> #:fs fs)))
+
+(define-method (store-upsert (self <doc-store-fs-adapter>)
+                             (doc-key <list>)
+                             (props <list>))
+  ;; TODO: implement this interface method:
+  ;;        - convert doc key to fs path
+  ;;        - load properties from path
+  ;;        - merge supplie props into loaded props
+  ;;        - save the properties
+  (throw 'not-implemented))
 
 ;;; fs-adapter.scm ends here.
