@@ -12,13 +12,14 @@
   #:use-module (docfiler gpg)
   #:use-module (ice-9 popen)
   #:export (<doc-store-fs-adapter>
-            storage-make-fs-adapter))
+            store-make-fs-adapter
+            adapter-store-upsert))
 
 (define-class <doc-store-fs-adapter> ()
   (fs #:init-keyword #:fs))
 
-(define* (storage-make-fs-adapter base-path recipients #:key
-                                  gpg-prog gpg-home)
+(define* (store-make-fs-adapter base-path recipients #:key
+                                gpg-prog gpg-home)
   "\
 Make a new storage fs adapter instance, configure to encrypt
 all creations/modifications for the supplied gpg recipients. All
@@ -38,9 +39,9 @@ gpg program path and gpg home directory arguments are optional.
                                          #:gpg-home gpg-home)))))
     (make <doc-store-fs-adapter> #:fs fs)))
 
-(define-method (store-upsert (self <doc-store-fs-adapter>)
-                             (doc-key <list>)
-                             (props <list>))
+(define-method (adapter-store-upsert (self <doc-store-fs-adapter>)
+                                     (doc-key <list>)
+                                     (props <list>))
   ;; TODO: implement this interface method:
   ;;        - convert doc key to fs path
   ;;        - load properties from path

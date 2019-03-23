@@ -9,10 +9,11 @@
 (define-module (docfiler store)
   #:use-module (oop goops)
   #:use-module (docfiler store fs-adapter)
+  #:use-module (docfiler store memory-adapter)
   #:use-module (scheme documentation)
   #:duplicates (merge-generics)
   #:export (<doc-store>
-            store-make-fs-store
+            make-store
             store-upsert))
 
 (define-class-with-docs <doc-store> ()
@@ -22,13 +23,25 @@ storage adapters.
 "
   (adapter #:init-keyword #:adapter #:getter get-adapter))
 
-(define (store-make-fs-store . fs-adapter-params)
+(define (make-store adapter-type . adapter-params)
   "\
-Create an fs-backed store. For parameter documentation, see
-the `(docfiler store fs-adapter):storage-make-fs-adapter'.
+Make a store instance of the specified type. The adapter
+params are specific to the chosen type. The following are
+the supported adapter type symbols:
+
+@itemize
+
+@bullet @code{fs} - make a file-system backed store
+
+@bullet @code{memory} - make a memory-backed store
+
+@end itemize
 "
-  (let ((fs-adapter (apply storage-make-fs-adapter fs-adapter-params)))
-    (make <doc-store> #:adapter fs-adapter)))
+  (let ((adapter (case adapter-type
+                   ((fs) (apply store-make-fs-adapter adapter-params))
+                   ((memory) (make <doc-store-memory-adapter>))
+                   (else (throw 'unknown-adapter-type)))))
+    (make <doc-store> #:adapter adapter)))
 
 (define-generic-with-docs store-upsert
   "\
@@ -47,6 +60,6 @@ string values.
 (define-method (store-upsert (self <doc-store>)
                              (doc-key <list>)
                              (props <list>))
-  (store-upsert (get-adapter self) doc-key props))
+  (adapter-store-upsert (get-adapter self) doc-key props))
 
 ;;; store.scm ends here.
