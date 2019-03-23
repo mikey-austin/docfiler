@@ -11,8 +11,10 @@
   #:use-module (docfiler fs)
   #:use-module (docfiler gpg)
   #:use-module (ice-9 popen)
+  #:use-module (scheme documentation)
   #:export (<doc-store-fs-adapter>
             store-make-fs-adapter
+            adapter-store-get
             adapter-store-upsert))
 
 (define-class <doc-store-fs-adapter> ()
@@ -47,6 +49,17 @@ gpg program path and gpg home directory arguments are optional.
   ;;        - load properties from path
   ;;        - merge supplie props into loaded props
   ;;        - save the properties
+  (throw 'not-implemented))
+
+(define-generic-with-docs adapter-store-get
+  "\
+Return an alist of properties associated with the specified key. If there
+are no such properties (eg the file doesn't exist), then the empty list is
+returned.
+")
+
+(define-method (adapter-store-get (self <doc-store-fs-adapter>)
+                                  (doc-key <list>))
   (throw 'not-implemented))
 
 ;;; fs-adapter.scm ends here.

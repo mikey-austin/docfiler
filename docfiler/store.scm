@@ -14,6 +14,7 @@
   #:duplicates (merge-generics)
   #:export (<doc-store>
             make-store
+            store-get
             store-upsert))
 
 (define-class-with-docs <doc-store> ()
@@ -61,5 +62,17 @@ string values.
                              (doc-key <list>)
                              (props <list>))
   (adapter-store-upsert (get-adapter self) doc-key props))
+
+(define-generic-with-docs store-get-props
+  "\
+Retrieve all properties associated with the supplied key. See the
+@code{store-upsert} docs for details on the format of the @code{doc-key}.
+
+The props are returned as an association list.
+")
+
+(define-method (store-get (self <doc-store>)
+                          (doc-key <list>))
+  (adapter-store-get (get-adapter self) doc-key))
 
 ;;; store.scm ends here.
