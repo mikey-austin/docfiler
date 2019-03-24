@@ -46,7 +46,7 @@ returned.
                                   (doc-key <list>))
   (let ((existing-props (hash-ref (file-props self) doc-key)))
     (if existing-props
-        (hash-map->list (lambda (k v) `(,k . ,v)) existing-props)
+        (hash-map->list cons existing-props)
         '())))
 
 (define-generic-with-docs adapter-store-iterate

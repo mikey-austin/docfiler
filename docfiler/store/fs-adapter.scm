@@ -15,6 +15,7 @@
   #:export (<doc-store-fs-adapter>
             store-make-fs-adapter
             adapter-store-get
+            adapter-store-iterate
             adapter-store-upsert))
 
 (define-class <doc-store-fs-adapter> ()
@@ -60,6 +61,18 @@ returned.
 
 (define-method (adapter-store-get (self <doc-store-fs-adapter>)
                                   (doc-key <list>))
+  (throw 'not-implemented))
+
+(define-generic-with-docs adapter-store-iterate
+  "\
+Iterate over all document keys applying the supplied procedure
+over each key if no key prefixes were given, or the current key
+prefix is in the speficied list.
+")
+
+(define-method (adapter-store-iterate (self <doc-store-fs-adapter>)
+                                      (proc <procedure>)
+                                      . key-prefixes)
   (throw 'not-implemented))
 
 ;;; fs-adapter.scm ends here.
