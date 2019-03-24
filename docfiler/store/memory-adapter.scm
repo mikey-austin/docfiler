@@ -11,6 +11,7 @@
   #:use-module (ice-9 hash-table)
   #:export (<doc-store-memory-adapter>
             adapter-store-get
+            adapter-store-iterate
             adapter-store-upsert))
 
 (define-class-with-docs <doc-store-memory-adapter> ()
@@ -47,5 +48,23 @@ returned.
     (if existing-props
         (hash-map->list (lambda (k v) `(,k . ,v)) existing-props)
         '())))
+
+(define-generic-with-docs adapter-store-iterate
+  "\
+Iterate over all document keys applying the supplied procedure
+over each key if no key prefixes were given, or the current key
+prefix is in the speficied list.
+")
+
+(define-method (adapter-store-iterate (self <doc-store-memory-adapter>)
+                                      (proc <procedure>)
+                                      . key-prefixes)
+  (let ((prefixes (car key-prefixes)))
+    (hash-for-each
+     (lambda (k v)
+       (if (or (nil? prefixes)
+               (member (car k) prefixes))
+           (proc k)))
+     (file-props self))))
 
 ;;; memory-adapter.scm ends here.

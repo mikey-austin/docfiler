@@ -43,4 +43,16 @@
  test "property modified properly"
  (is-eq "water bill,apartment,bills" (assoc-ref updated-props "tags")))
 
+(define found #f)
+(store-iterate store (lambda (k) (set! found #t)))
+(register-test
+ test "iteration works"
+ (is-ok found))
+
+(define found-filtered #f)
+(store-iterate store (lambda (k) (set! found-filtered #t)) "2019-02-01")
+(register-test
+ test "filtered iteration works"
+ (is-ok found-filtered))
+
 (run-tests test)

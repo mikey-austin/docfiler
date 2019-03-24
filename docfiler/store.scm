@@ -15,6 +15,7 @@
   #:export (<doc-store>
             make-store
             store-get
+            store-iterate
             store-upsert))
 
 (define-class-with-docs <doc-store> ()
@@ -74,5 +75,16 @@ The props are returned as an association list.
 (define-method (store-get (self <doc-store>)
                           (doc-key <list>))
   (adapter-store-get (get-adapter self) doc-key))
+
+(define-generic-with-docs store-iterate
+  "\
+Iterate over the specified key prefixes executing the supplied
+proc with each document key as an argument.
+")
+
+(define-method (store-iterate (self <doc-store>)
+                              (proc <procedure>)
+                              . key-prefixes)
+  (adapter-store-iterate (get-adapter self) proc key-prefixes))
 
 ;;; store.scm ends here.
