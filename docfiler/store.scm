@@ -63,7 +63,7 @@ string values.
                              (props <list>))
   (adapter-store-upsert (get-adapter self) doc-key props))
 
-(define-generic-with-docs store-get-props
+(define-generic-with-docs store-get
   "\
 Retrieve all properties associated with the supplied key. See the
 @code{store-upsert} docs for details on the format of the @code{doc-key}.

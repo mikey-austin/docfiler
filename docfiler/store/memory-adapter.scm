@@ -26,8 +26,8 @@ Implement memory-backed upsert functionality.
 ")
 
 (define-method (adapter-store-upsert (self <doc-store-memory-adapter>)
-                             (doc-key <list>)
-                             (props <list>))
+                                     (doc-key <list>)
+                                     (props <list>))
   (let ((existing-props (hash-ref (file-props self) doc-key (make-hash-table))))
     (for-each
      (lambda (new-prop)

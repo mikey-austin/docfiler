@@ -29,4 +29,18 @@
  test "non-existant key returns nil"
  (is-ok (null? (store-get store '("baz" "foo")))))
 
+;; Test the merging of properties.
+(store-upsert store
+              '("2019-02-01" "my-doc")
+              '(("tags" . "water bill,apartment,bills")))
+(define updated-props (store-get store '("2019-02-01" "my-doc")))
+
+(register-test
+ test "can fetched unmodified properties"
+ (is-eq "My doc" (assoc-ref updated-props "name")))
+
+(register-test
+ test "property modified properly"
+ (is-eq "water bill,apartment,bills" (assoc-ref updated-props "tags")))
+
 (run-tests test)
