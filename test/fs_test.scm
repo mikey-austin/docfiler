@@ -1,17 +1,10 @@
 (use-modules (docfiler fs)
+             (docfiler test)
              (docfiler tap)
-             (oop goops)
-             (ice-9 ftw))
+             (oop goops))
 
 (define test (make <tap-test-collection>))
-
-(register-test
- test "ensure path joining works"
- (is-eq "a/b/c/d" (join-paths "a////" "b" "//c////" "d")))
-
-(define tmp-base
-  (join-paths "/tmp"
-              (string-append "test_" (number->string (random 1000000000)))))
+(define tmp-base (test-make-path))
 (define fs (make <doc-fs> #:base-path tmp-base))
 
 (register-test
@@ -53,11 +46,5 @@
 
 (run-tests test)
 
-;; Cleanup the temporary files and directories.
-(nftw tmp-base
-      (lambda (filename statinfo flag base level)
-        (case flag
-          ((directory-processed) (rmdir filename))
-          ((regular) (delete-file filename)))
-        #t)
-      'depth)
+(test-cleanup-paths tmp-base)
+

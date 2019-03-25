@@ -23,12 +23,12 @@
 (define* (gpg-encrypt-cmd recipients abs-path #:key gpg-prog gpg-home)
   (append (list (if gpg-prog gpg-prog default-gpg-prog) "-ea")
           (gpg-expand-recipients recipients)
-          (if gpg-home ("--homedir" gpg-home) '())
+          (if gpg-home (list "--homedir" gpg-home) '())
           (list "--batch" "--yes" "--output" abs-path)))
 
 (define* (gpg-decrypt-cmd abs-path #:key gpg-prog gpg-home)
   (append (list (if gpg-prog gpg-prog default-gpg-prog) "--batch" "--yes" "-d")
-          (if gpg-home ("--homedir" gpg-home) '())
+          (if gpg-home (list "--homedir" gpg-home) '())
           (list abs-path)))
 
 (define* (gpg-encrypt recipients abs-path #:key gpg-prog gpg-home)

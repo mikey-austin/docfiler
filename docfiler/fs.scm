@@ -23,14 +23,16 @@
 ;; Code:
 
 (define-module (docfiler fs)
+  #:use-module (docfiler utils)
   #:use-module (oop goops)
   #:use-module (ice-9 ports)
-  #:use-module (ice-9 regex)
+  #:use-module (scheme documentation)
+  #:use-module (ice-9 ftw)
   #:export (<doc-fs>
-            join-paths
             fs-make-abs-path
             fs-write-abs-path
             fs-read-abs-path
+            fs-for-each
             fs-set-prop
             fs-get-prop
             fs-save-props
@@ -59,16 +61,13 @@
     (write obj out-port)
     ((slot-ref fs 'port-closer) out-port)))
 
-(define (join-paths . paths)
-  (regexp-substitute/global #f "/+" (string-join paths "/") 'pre "/" 'post))
-
 (define-method (fs-make-abs-path (fs <doc-fs>)
                                  (path <string>))
   (unless (file-exists? (slot-ref fs 'base-path))
-    (mkdir (slot-ref fs 'base-path)))
+    (mkdir-p (slot-ref fs 'base-path)))
   (let ((abs-path (join-paths (slot-ref fs 'base-path) path)))
     (unless (file-exists? abs-path)
-      (mkdir abs-path))
+      (mkdir-p abs-path))
     abs-path))
 
 (define-method (fs-load-props (fs <doc-fs>)
@@ -98,5 +97,28 @@
                             (prop-value <string>))
   (let ((props (fs-load-props fs path)))
     (fs-save-props fs path (assoc-set! props prop-name prop-value))))
+
+(define-generic-with-docs fs-for-each
+  "\
+Iterate over each file path relative to the base path of the
+fs instance.
+")
+
+(define-method (fs-for-each (fs <doc-fs>)
+                            (proc <procedure>))
+  (nftw (slot-ref fs 'base-path)
+        (lambda (filename statinfo flag base level)
+          (if (equal? (basename filename) (slot-ref fs 'meta-filename))
+              (proc (extract-rel-file-path fs filename)))
+          #t)))
+
+(define-method (extract-rel-file-path (fs <doc-fs>)
+                                      (filename <string>))
+  (let* ((file-dir (dirname filename))
+         (rel-path (string-replace
+                    file-dir "" 0
+                    (string-length
+                     (string-trim-right (slot-ref fs 'base-path) #\/)))))
+    (string-trim rel-path #\/)))
 
 ;; fs.scm end
