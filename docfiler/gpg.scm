@@ -21,13 +21,13 @@
    (lambda (a b) (cons "-r" (cons a b))) '() recipients))
 
 (define* (gpg-encrypt-cmd recipients abs-path #:key gpg-prog gpg-home)
-  (append (list (if gpg-prog gpg-prog default-gpg-prog) "-ea")
+  (append (list (if gpg-prog gpg-prog default-gpg-prog) "-eaq")
           (gpg-expand-recipients recipients)
           (if gpg-home (list "--homedir" gpg-home) '())
           (list "--batch" "--yes" "--output" abs-path)))
 
 (define* (gpg-decrypt-cmd abs-path #:key gpg-prog gpg-home)
-  (append (list (if gpg-prog gpg-prog default-gpg-prog) "--batch" "--yes" "-d")
+  (append (list (if gpg-prog gpg-prog default-gpg-prog) "--batch" "--yes" "-dq")
           (if gpg-home (list "--homedir" gpg-home) '())
           (list abs-path)))
 

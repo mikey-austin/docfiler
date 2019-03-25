@@ -1,4 +1,5 @@
 (use-modules (docfiler fs)
+             (docfiler utils)
              (docfiler test)
              (docfiler tap)
              (oop goops))

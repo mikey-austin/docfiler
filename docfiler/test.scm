@@ -16,6 +16,7 @@
 
 (define (test-make-path)
   "Make a temporary path string."
+  (set! *random-state* (random-state-from-platform))
   (join-paths
    "/tmp" (string-append
            "test_" (number->string (random 1000000000)))))
@@ -24,18 +25,19 @@
   "Create a new gpg keychain loaded with the specified recipients"
   (let ((new-gpg-home (test-make-path)))
     (mkdir new-gpg-home)
+    (chmod new-gpg-home #o700)
     (for-each
      (lambda (recipient)
-       (system (format #f "gpg2 --homedir ~a --batch --yes --quick-gen-key --passphrase '' ~a"
+       (system (format #f "gpg2 -q --homedir ~a --batch --yes --quick-gen-key --passphrase '' ~a"
                        new-gpg-home recipient))
        (let ((long-key-id (get-gpg-long-key-id recipient)))
-         (system (format #f "echo ~a:6: |gpg2 --import-ownertrust" long-key-id))))
+         (system (format #f "echo ~a:6: |gpg2 -q --import-ownertrust" long-key-id))))
      recipients)
     new-gpg-home))
 
 (define (make-key-cmd recipient)
   (format
-   #f "gpg2 --list-keys --keyid-format LONG --with-colons |awk -F: '/~a/ {print $8}'"
+   #f "gpg2 -q --list-keys --keyid-format LONG --with-colons |awk -F: '/~a/ {print $8}'"
    recipient))
 
 (define (get-gpg-long-key-id recipient)

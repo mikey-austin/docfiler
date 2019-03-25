@@ -1,4 +1,5 @@
 (use-modules (docfiler utils)
+             (oop goops)
              (docfiler tap))
 
 (define test (make <tap-test-collection>))
