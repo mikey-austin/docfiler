@@ -54,7 +54,7 @@ gpg program path and gpg home directory arguments are optional.
   (let* ((components (string-split rel-path #\/))
          (date (string-join (take components 3) "-"))
          (filename (drop components 3)))
-    (list date filename)))
+    (cons date filename)))
 
 (define-method (adapter-store-upsert (self <doc-store-fs-adapter>)
                                      (doc-key <list>)
@@ -94,9 +94,10 @@ prefix is in the speficied list.
   (fs-for-each
    (get-fs self)
    (lambda (rel-path)
-     (let ((doc-key (rel-path->doc-key rel-path)))
-       (if (or (nil? key-prefixes)
-               (member (car doc-key) key-prefixes))
+     (let ((doc-key (rel-path->doc-key rel-path))
+           (prefixes (car key-prefixes)))
+       (if (or (nil? prefixes)
+               (member (car doc-key) prefixes))
            (proc doc-key))))))
 
 ;;; fs-adapter.scm ends here.
